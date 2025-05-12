@@ -1,0 +1,194 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="page-title-index">Roch Alain KAMGA - Cuisinier Professionnel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="js/translations.js"></script>
+    <style>
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; }
+        .recipe-card:hover, .shop-item:hover, .portfolio-card:hover { transform: translateY(-5px); box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2); }
+        .nav-link:hover { color: #FBC02D; }
+        .profile-photo { border-radius: 50%; object-fit: cover; border: 3px solid #ffffff; }
+        .view-more { background-color: #D32F2F; color: white; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s ease; }
+        .view-more:hover { background-color: #B71C1C; }
+        .logo { max-width: 100px; height: auto; }
+    </style>
+</head>
+<body class="bg-green-50 font-sans">
+    <nav class="bg-gray-800 text-white fixed w-full top-0 z-10 shadow-lg">
+        <div class="container mx-auto px-6 py-2 flex justify-between items-center">
+            <img src="images/3Times_logo_New.png" alt="3 Times Food Logo" class="logo animate-fadeInUp" style="animation-delay: 0.1s;">
+            <div class="space-x-6 flex items-center">
+                <a href="index.html" class="nav-link" data-key="nav-home">Accueil</a>
+                <a href="recipes/recipes.html" class="nav-link" data-key="nav-recipes">Recettes</a>
+                <a href="shop/shop.html" class="nav-link" data-key="nav-shop">Boutique</a>
+                <a href="portfolio/portfolio.html" class="nav-link" data-key="nav-portfolio">Portfolio</a>
+                <a href="about/about.html" class="nav-link" data-key="nav-about">À propos</a>
+                <a href="contact/contact.html" class="nav-link" data-key="nav-contact">Contact</a>
+                <a href="bookings/bookings.html" class="nav-link" data-key="nav-bookings">Réservations</a>
+                <select id="language-select" class="bg-gray-800 text-white border-none outline-none">
+                    <option value="fr">Français</option>
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-red-600 text-white py-20 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center mb-6">
+                <img src="images/Roch.jpg" alt="Roch Alain KAMGA" class="profile-photo w-32 h-32 animate-fadeInUp" style="animation-delay: 0.1s;">
+            </div>
+            <h1 class="text-5xl font-bold animate-fadeInUp" data-key="header-title-index">Roch Alain KAMGA</h1>
+            <p class="text-xl mt-4 animate-fadeInUp" style="animation-delay: 0.2s;" data-key="header-subtitle-index">Cuisinier Professionnel & Passionné de Gastronomie</p>
+            <div class="mt-6 flex justify-center space-x-6 animate-fadeInUp" style="animation-delay: 0.4s;">
+                <a href="tel:+59895570404" class="hover:text-yellow-300"><i class="fas fa-phone"></i> +598 95 570 404</a>
+                <a href="mailto:roch.alain.kamga@gmail.com" class="hover:text-yellow-300"><i class="fas fa-envelope"></i> roch.alain.kamga@gmail.com</a>
+                <a href="https://linkedin.com/in/rochalainkamga" target="_blank" class="hover:text-yellow-300"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                <a href="https://wa.me/59895570404" target="_blank" class="hover:text-yellow-300"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            </div>
+        </div>
+    </header>
+
+    <section id="about" class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center animate-fadeInUp" data-key="about-title">À propos de moi</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto animate-fadeInUp" style="animation-delay: 0.2s;" data-key="about-text">Chef cuisinier avec plus de 10 ans d’expérience dans la gastronomie africaine et internationale, je suis passionné par la création de plats sains et savoureux à base de produits locaux. Formé dans des écoles prestigieuses, je partage mon savoir à travers des recettes, des livres, et des ateliers.</p>
+        </div>
+    </section>
+
+    <section id="recipes-preview" class="py-16 bg-yellow-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center animate-fadeInUp" data-key="recipes-title">Recettes</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="recipe-card bg-white p-6 rounded-lg shadow-lg transition-transform duration-300 animate-fadeInUp" style="animation-delay: 0.2s;">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2" data-key="recipe-1-title">Poulet Yassa Réinventé</h3>
+                    <p class="text-gray-600 mb-4" data-key="recipe-1-text">Une version saine du plat sénégalais avec citron et oignons. Publié le 10/05/2025.</p>
+                    <a href="recipes/recipe1.html" class="text-gray-800 hover:text-yellow-600" data-key="recipe-1-link">Lire la recette...</a>
+                </div>
+                <div class="recipe-card bg-white p-6 rounded-lg shadow-lg transition-transform duration-300 animate-fadeInUp" style="animation-delay: 0.4s;">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2" data-key="recipe-2-title">Gâteau à l’Ananas</h3>
+                    <p class="text-gray-600 mb-4" data-key="recipe-2-text">Un dessert africain léger avec ananas frais. Publié le 05/05/2025.</p>
+                    <a href="recipes/recipe2.html" class="text-gray-800 hover:text-yellow-600" data-key="recipe-2-link">Lire la recette...</a>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <a href="recipes/recipes.html" class="view-more animate-fadeInUp" style="animation-delay: 0.6s;" data-key="view-more-recipes">Voir plus de recettes</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="shop-preview" class="py-16 bg-green-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center animate-fadeInUp" data-key="shop-title">Boutique</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="shop-item bg-white p-6 rounded-lg shadow-lg transition-transform duration-300 animate-fadeInUp" style="animation-delay: 0.2s;">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2" data-key="shop-item-1-title">Saveurs d’Afrique Saine</h3>
+                    <p class="text-gray-600 mb-4" data-key="shop-item-1-text">Un livre avec 40 recettes africaines healthy. Résumé : Découvrez une cuisine africaine équilibrée.</p>
+                    <a href="https://www.amazon.fr/saveurs-afrique-saine/dp/9876543210" target="_blank" class="text-gray-800 hover:text-yellow-600" data-key="shop-item-1-link">Acheter sur Amazon</a>
+                </div>
+                <div class="shop-item bg-white p-6 rounded-lg shadow-lg transition-transform duration-300 animate-fadeInUp" style="animation-delay: 0.4s;">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2" data-key="shop-item-2-title">Épices Africaines</h3>
+                    <p class="text-gray-600 mb-4" data-key="shop-item-2-text">Guide avec 20 mélanges d’épices africaines. Résumé : Explorez les saveurs uniques.</p>
+                    <a href="https://www.fnac.com/epices-africaines/4567891234" target="_blank" class="text-gray-800 hover:text-yellow-600" data-key="shop-item-2-link">Acheter sur Fnac</a>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <a href="shop/shop.html" class="view-more animate-fadeInUp" style="animation-delay: 0.6s;" data-key="view-more-shop">Voir la boutique complète</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="portfolio-preview" class="py-16 bg-yellow-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center animate-fadeInUp" data-key="portfolio-title">Portfolio</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="portfolio-card bg-white p-6 rounded-lg shadow-lg transition-transform duration-300 animate-fadeInUp" style="animation-delay: 0.2s;">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2" data-key="portfolio-item-1-title">Festival AfroFood 2024</h3>
+                    <p class="text-gray-600 mb-4" data-key="portfolio-item-1-text">Menu healthy pour 200 invités à Montevideo.</p>
+                </div>
+                <div class="portfolio-card bg-white p-6 rounded-lg shadow-lg transition-transform duration-300 animate-fadeInUp" style="animation-delay: 0.4s;">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2" data-key="portfolio-item-2-title">Dîner Privé Afro-Latino</h3>
+                    <p class="text-gray-600 mb-4" data-key="portfolio-item-2-text">Collaboration avec des chefs locaux.</p>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <a href="portfolio/portfolio.html" class="view-more animate-fadeInUp" style="animation-delay: 0.6s;" data-key="view-more-portfolio">Voir plus de réalisations</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact-preview" class="py-16 bg-green-50">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 animate-fadeInUp" data-key="contact-title">Contact</h2>
+            <p class="text-lg text-gray-700 max-w-2xl mx-auto mb-6 animate-fadeInUp" style="animation-delay: 0.2s;" data-key="contact-text">Intéressé par une collaboration ou une réservation ? Contactez-moi !</p>
+            <a href="contact/contact.html" class="view-more animate-fadeInUp" style="animation-delay: 0.4s;" data-key="contact-link">Me contacter</a>
+            <a href="https://wa.me/59895570404" target="_blank" class="mt-4 block hover:text-yellow-300 animate-fadeInUp" style="animation-delay: 0.6s;" data-key="whatsapp">Via WhatsApp</a>
+        </div>
+    </section>
+
+    <section id="bookings-preview" class="py-16 bg-yellow-50">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 animate-fadeInUp" data-key="bookings-title">Réservations</h2>
+            <p class="text-lg text-gray-700 max-w-2xl mx-auto mb-6 animate-fadeInUp" style="animation-delay: 0.2s;" data-key="bookings-text">Réservez un atelier culinaire ou un dîner privé avec moi.</p>
+            <a href="bookings/bookings.html" class="view-more animate-fadeInUp" style="animation-delay: 0.4s;" data-key="bookings-link">Réserver maintenant</a>
+            <a href="https://wa.me/59895570404" target="_blank" class="mt-4 block hover:text-yellow-300 animate-fadeInUp" style="animation-delay: 0.6s;" data-key="whatsapp">Via WhatsApp</a>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p data-key="footer-text">© 2025 Roch Alain. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <style>
+        /* Ajout de styles pour les animations déjà présentes */
+    </style>
+</body>
+</html>
