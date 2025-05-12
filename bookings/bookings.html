@@ -1,1 +1,105 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
 
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservations - Roch Alain KAMGA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../js/translations.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeInUp { animation: fadeInUp 0.6s ease-out forwards; } .logo {
+            max-width: 100px; /* Réduction supplémentaire de la taille du logo */
+            height: auto;
+        }
+    </style>
+</head>
+<body class="bg-green-50 font-sans">
+    <nav class="bg-gray-800 text-white fixed w-full top-0 z-10 shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <img src="../images/3Times_logo_New.png" alt="3 Times Food Logo" class="logo animate-fadeInUp" style="animation-delay: 0.1s;">
+            <div class="space-x-6">
+                <a href="../index.html" class="nav-link">Accueil</a>
+                <a href="../recipes/recipes.html" class="nav-link">Recettes</a>
+                <a href="../shop/shop.html" class="nav-link">Boutique</a>
+                <a href="../portfolio/portfolio.html" class="nav-link">Portfolio</a>
+                <a href="../about/about.html" class="nav-link">À propos</a>
+                <a href="../contact/contact.html" class="nav-link">Contact</a>
+                <a href="bookings.html" class="nav-link">Réservations</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-red-600 text-white py-20 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl font-bold animate-fadeInUp">Réservations</h2>
+            <p class="text-lg mt-4 animate-fadeInUp" style="animation-delay: 0.2s;">Ateliers et dîners privés.</p>
+        </div>
+    </header>
+
+    <section class="py-16">
+        <div class="container mx-auto px-4 max-w-lg">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4 text-center animate-fadeInUp">Réserver un atelier</h3>
+            <p class="text-gray-700 mb-4 text-center animate-fadeInUp" style="animation-delay: 0.2s;">Prochains ateliers : Cuisine africaine saine, 25/05/2025, 10h-13h.</p>
+            <form class="bg-white p-6 rounded-lg shadow-lg animate-fadeInUp" style="animation-delay: 0.4s;">
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="name">Nom</label>
+                    <input type="text" id="name" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="date">Date</label>
+                    <input type="date" id="date" class="w-full p-2 border rounded" required>
+                </div>
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-800">Réserver</button>
+            </form>
+            <a href="https://wa.me/59895570404" target="_blank" class="mt-4 block text-red-600 hover:text-red-800 animate-fadeInUp" style="animation-delay: 0.6s;"><i class="fab fa-whatsapp"></i> Réserver via WhatsApp</a>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2025 Roch Alain. Tous droits réservés.</p>
+        </div>
+    </footer>
+</body>
+</html>
